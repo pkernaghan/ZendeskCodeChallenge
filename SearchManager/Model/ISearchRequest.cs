@@ -2,5 +2,6 @@
 {
     public interface ISearchRequest
     {
+        string SearchText { get; set; }
     }
 }

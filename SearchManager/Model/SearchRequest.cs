@@ -6,5 +6,8 @@ namespace ZendeskSearchManager.Model
 {
     public class SearchRequest: ISearchRequest
     {
+        public string SearchText { get; set; }
+
+        // bool isCaseSensitive { get; set; }
     }
 }

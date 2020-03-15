@@ -5,9 +5,13 @@ VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZendeskCodeChallenge", "ZendeskCodeChallenge\ZendeskCodeChallenge.csproj", "{DAE18771-5E1B-4AD5-A7B1-124D307BFA09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchManager", "SearchManager\ZendeskSearchManager.csproj", "{5880DEC6-B3E3-4E9A-9932-2385B8FE532D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZendeskSearchManager", "SearchManager\ZendeskSearchManager.csproj", "{5880DEC6-B3E3-4E9A-9932-2385B8FE532D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchManager.Tests", "ZendeskSearchManager.Tests\ZendeskSearchManager.Tests.csproj", "{CFF593C4-A827-405E-B93F-69F9967193F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZendeskSearchManager.Tests", "ZendeskSearchManager.Tests\ZendeskSearchManager.Tests.csproj", "{CFF593C4-A827-405E-B93F-69F9967193F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchProcessor", "ZendeskSearchProcessor\ZendeskSearchProcessor.csproj", "{B2C5492B-A2FD-4C27-B56E-D132F4963B3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchProcessor.Tests", "ZendeskSearchProcessor.Tests\ZendeskSearchProcessor.Tests.csproj", "{FBC675EA-982F-46F9-A34D-CE2BAB930769}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{CFF593C4-A827-405E-B93F-69F9967193F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFF593C4-A827-405E-B93F-69F9967193F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFF593C4-A827-405E-B93F-69F9967193F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C5492B-A2FD-4C27-B56E-D132F4963B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C5492B-A2FD-4C27-B56E-D132F4963B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C5492B-A2FD-4C27-B56E-D132F4963B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C5492B-A2FD-4C27-B56E-D132F4963B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
