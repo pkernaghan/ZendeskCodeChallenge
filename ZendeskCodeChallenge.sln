@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchProcessor", "Z
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchProcessor.Tests", "ZendeskSearchProcessor.Tests\ZendeskSearchProcessor.Tests.csproj", "{FBC675EA-982F-46F9-A34D-CE2BAB930769}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchRepository", "ZendeskSearchRepository\ZendeskSearchRepository.csproj", "{BC417C7E-4A2B-45F6-B7DE-ED6319E521E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZendeskSearchRepository.Tests", "ZendeskSearchRepository.Tests\ZendeskSearchRepository.Tests.csproj", "{5DD29035-7DB7-4AA3-BDBE-B04D8A0F8ACA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBC675EA-982F-46F9-A34D-CE2BAB930769}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC417C7E-4A2B-45F6-B7DE-ED6319E521E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC417C7E-4A2B-45F6-B7DE-ED6319E521E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC417C7E-4A2B-45F6-B7DE-ED6319E521E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC417C7E-4A2B-45F6-B7DE-ED6319E521E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DD29035-7DB7-4AA3-BDBE-B04D8A0F8ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DD29035-7DB7-4AA3-BDBE-B04D8A0F8ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DD29035-7DB7-4AA3-BDBE-B04D8A0F8ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DD29035-7DB7-4AA3-BDBE-B04D8A0F8ACA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
