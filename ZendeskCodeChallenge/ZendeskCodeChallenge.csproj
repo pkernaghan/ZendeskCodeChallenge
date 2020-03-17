@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,11 @@
 
   <ItemGroup>
     <Folder Include="InputFiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SearchManager\ZendeskSearchManager.csproj" />
+    <ProjectReference Include="..\ZendeskSearchRepository\ZendeskSearchRepository.csproj" />
   </ItemGroup>
 
 </Project>

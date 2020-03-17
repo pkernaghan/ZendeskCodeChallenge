@@ -6,5 +6,6 @@ namespace ZendeskSearchRepository.Models
 {
     public class SearchRequestData: ISearchRequestData
     {
+        public string SearchString { get; set; }
     }
 }

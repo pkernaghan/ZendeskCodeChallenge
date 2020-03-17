@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ZendeskSearchManager;
 using ZendeskSearchManager.Exception;
 using ZendeskSearchManager.Model;
 using ZendeskSearchProcessor;
@@ -11,6 +12,11 @@ namespace SearchManager
     public class SearchManager
     {
         protected ISearchProcessor searchProcessor;
+
+        static SearchManager()
+        {
+            ZendeskDBSetup.SetupSearchDataDb();
+        }
 
         public SearchManager()
         {
