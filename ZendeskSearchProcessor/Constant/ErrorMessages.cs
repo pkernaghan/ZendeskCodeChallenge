@@ -13,7 +13,7 @@
         public static class ExecuteSearch
         {
             public static string PerformSearch =
-                @"Error: A exception occurred whilst performing a search. Please see inner exception for more infomration";
+                @"Error: A exception occurred whilst performing a search. Please see inner exception for more information";
         }
     }
 }
