@@ -1,7 +1,6 @@
 ﻿namespace ZendeskSearchManager.Model
 {
-    public interface ISearchRequest
+    public interface ISearchRequest : ZendeskSearchProcessor.Model.ISearchRequest
     {
-        string SearchText { get; set; }
     }
 }

@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constant\" />
+    <Compile Remove="Model\ISearchRequestItem.cs" />
+    <Compile Remove="Model\ISearchResultItem.cs" />
+    <Compile Remove="Model\SearchRequestItem.cs" />
+    <Compile Remove="Model\SearchResponse.cs" />
+    <Compile Remove="Model\SearchResultItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZendeskSearchRepository\ZendeskSearchRepository.csproj" />
   </ItemGroup>
 
 </Project>

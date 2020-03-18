@@ -1,21 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using ZendeskSearchProcessor.Common;
+using ZendeskSearchProcessor.Exception;
 using ZendeskSearchProcessor.Model;
+using ZendeskSearchRepository;
+using ZendeskSearchProcessor.Constants;
+using ZendeskSearchRepository.Models;
 
 namespace ZendeskSearchProcessor
 {
     public class SearchProcessor : ISearchProcessor
     {
-
-        public async Task<ISearchResult> SearchAll(ISearchRequestItem searchRequestItem)
+        static SearchProcessor()
         {
-            ISearchResult searchResult = new SearchResult();
+            SearchRepository = new SearchRepository();
+        }
 
-            // IList<ISearchResultItem> results = new List<SearchResultItem>();
+        protected static SearchRepository SearchRepository { get; set; }
 
+        public async Task<ISearchResult> PerformSearch(ISearchRequest searchRequest)
+        {
+            try
+            {
+                SearchValidationHelper.ValidateSearchRequest(searchRequest);
+                var searchRequestData = CreateRequest(searchRequest);
 
-            return searchResult;
+                var searchResponse = await SearchRepository.SearchAll(searchRequestData);
+
+                ISearchResult result = new SearchResult();
+                result.SearchResultDetails = searchResponse;
+
+                return result;
+            }
+            catch (System.Exception ex)
+            {
+                throw new ZendeskSearchProcessorException(ErrorMessages.ExecuteSearch.PerformSearch, ex);
+            }
+        }
+
+        protected static ISearchRequestData CreateRequest(ISearchRequest searchRequest)
+        {
+            ISearchRequestData requestData = new SearchRequestData();
+            requestData.SearchString = searchRequest.SearchText;
+            return requestData;
         }
     }
 }

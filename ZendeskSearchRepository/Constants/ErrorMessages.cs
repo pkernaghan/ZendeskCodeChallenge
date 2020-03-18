@@ -18,6 +18,7 @@ namespace ZendeskSearchRepository.Constants
 
         public static class SearchData
         {
+            public static string GenericMessage = @"Error: An error occurred within SearchAll";
             public static string SearchOrganizations = @"Error: An error Occurred when Search Organizations Repo Data";
             public static string SearchTickets = @"Error: An error Occurred when Search Tickets Repo Data";
             public static string SearchUser = @"Error: An error Occurred when Search Users Repo Data";

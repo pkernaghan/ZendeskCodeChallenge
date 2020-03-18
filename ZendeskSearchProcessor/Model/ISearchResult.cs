@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using ZendeskSearchRepository.Models;
 
 namespace ZendeskSearchProcessor.Model
 {
     public interface ISearchResult
     {
-        IList<ISearchResultItem> SearchResultItems { get;}
+        ISearchResponseData SearchResultDetails { get; set; }
     }
 }

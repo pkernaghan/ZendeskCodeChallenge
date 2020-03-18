@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="InputFiles\" />
+    <None Remove="Zendesk_Glue_Setup.JPG" />
+    <None Remove="Zendesk_Glue_Setup2.JPG" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SearchManager\ZendeskSearchManager.csproj" />
-    <ProjectReference Include="..\ZendeskSearchRepository\ZendeskSearchRepository.csproj" />
   </ItemGroup>
 
 </Project>

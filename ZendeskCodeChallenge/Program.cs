@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ZendeskSearchRepository;
-using ZendeskSearchRepository.Models;
-
+using ZendeskSearchManager;
+using ZendeskSearchManager.Model;
 
 namespace ZendeskCodeChallenge
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
 
-            var searchRepository = new SearchRepository();
+            ISearchManager searchManager = new SearchManager.SearchManager();
+            ISearchRequest searchRequest = new SearchRequest();
+            searchRequest.SearchText = @"A Catastrophe in Korea (North)";
 
-            ISearchRequestData requestData = new SearchRequestData();
-            requestData.SearchString = @"Xylar";
-
-            var results = await searchRepository.SearchAll(requestData);
+            searchManager.SearchAll(searchRequest);
 
             Console.ReadLine();
         }

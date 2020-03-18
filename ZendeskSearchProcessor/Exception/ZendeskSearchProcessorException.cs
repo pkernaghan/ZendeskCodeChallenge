@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ZendeskSearchProcessor.Exception
+﻿namespace ZendeskSearchProcessor.Exception
 {
-    public class ZendeskSearchProcessorException: System.Exception
+    public class ZendeskSearchProcessorException : System.Exception
     {
-        public ZendeskSearchProcessorException() : base()
+        public ZendeskSearchProcessorException()
         {
         }
 

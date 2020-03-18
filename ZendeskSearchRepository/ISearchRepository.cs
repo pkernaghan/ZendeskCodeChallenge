@@ -10,9 +10,7 @@ namespace ZendeskSearchRepository
         Task<ISearchResponseData> SearchAll(ISearchRequestData data);
         
         Task<List<Organization>> SearchOrganizations(string searchText);
-
-        //Task<ISearchResponseData> SearchOrgnisations(ISearchRequestData data);
-        //Task<ISearchResponseData> SearchTickets(ISearchRequestData data);
-        //Task<ISearchResponseData> SearchUsers(ISearchRequestData data);
+        Task<List<Ticket>> SearchTickets(string searchText);
+        Task<List<User>> SearchUsers(string searchText);
     }
 }

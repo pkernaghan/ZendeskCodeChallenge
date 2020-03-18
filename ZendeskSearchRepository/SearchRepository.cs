@@ -2,60 +2,80 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ZendeskSearchManager.Exception;
 using ZendeskSearchRepository.Configuration;
 using ZendeskSearchRepository.Constants;
 using ZendeskSearchRepository.DBModels;
+using ZendeskSearchRepository.DBModels.ComplexDTOs;
 using ZendeskSearchRepository.Exceptions;
 using ZendeskSearchRepository.Models;
+using ZendeskSearchRepository.Models.DataRepoEntity.ComplexDTOs;
 
 namespace ZendeskSearchRepository
 {
     public class SearchRepository : ISearchRepository
     {
-        #region Static Properties
-
-        #region Public static Properties
-        //public static List<Organization> GetOrganizations() { return _organizations; }
-        //public static List<User> GetUsers() { return _users; }
-        //public static List<Ticket> GetTickets() { return _tickets; }
-        #endregion
-
-        #region Protected static Properties
-
-        protected static List<Organization> _organizations = new List<Organization>();        
-        protected static List<User> _users = new List<User>();
-        protected static List<Ticket> _tickets = new List<Ticket>();
-        protected static ISearchRepoConfigSettings configSettings;
-        #endregion
-        
-        #endregion
         static SearchRepository()
         {
             GetConfigSettings();
             PopulateDateRepo(configSettings);
         }
 
-        public SearchRepository()
-        {
-        }
+        #region Static Properties
+
+        #region Protected static Properties
+
+        protected static List<Organization> _organizations = new List<Organization>();
+        protected static List<User> _users = new List<User>();
+        protected static List<Ticket> _tickets = new List<Ticket>();
+        protected static ISearchRepoConfigSettings configSettings;
+
+        #endregion
+
+        #endregion
 
         #region Public methods
+
         public async Task<ISearchResponseData> SearchAll(ISearchRequestData data)
         {
-            var response = new SearchResponseData();
+            try
+            {
+                var response = new SearchResponseData();
 
-            response.MatchingOrganizations = await SearchOrganizations(data.SearchString);
-            response.MatchingTickets = await SearchTickets(data.SearchString);
-            response.MatchingUsers = await SearchUsers(data.SearchString);
+                response.MatchingOrganizations = await SearchOrganizations(data.SearchString);
+                var lazyTicketsList = await SearchTickets(data.SearchString);
+                var lazyUsersList = await SearchUsers(data.SearchString);
 
-            return response;
+                foreach (var ticket in lazyTicketsList)
+                {
+                    var complexDTO = GetComplexTicketById(ticket.Id);
+
+                    try
+                    {
+                        response.MatchingTickets.Add(complexDTO);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException();
+                    }
+                }
+
+                foreach (var user in lazyUsersList)
+                {
+                    var complexUserDTO = GetComplexUserById(user.Id);
+                    response.MatchingUsers.Add(complexUserDTO);
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new ZendeskSearchRepositoryException(ErrorMessages.SearchData.GenericMessage);
+            }
         }
 
         public async Task<List<Organization>> SearchOrganizations(string searchText)
@@ -64,19 +84,13 @@ namespace ZendeskSearchRepository
 
             try
             {
-
                 if (string.IsNullOrWhiteSpace(searchText) || _organizations == null || _organizations.Count == 0)
-                {
                     return returnList;
-                }
-                else
-                {
-                    return GetMatchingObjectsContaningMatchingString<Organization>(searchText, _organizations);
-                }
+                return GetMatchingObjectsContaningMatchingString(searchText, _organizations);
             }
             catch (Exception ex)
             {
-                throw new ZendeskSearchManagerException(ErrorMessages.SearchData.SearchOrganizations);
+                throw new ZendeskSearchRepositoryException(ErrorMessages.SearchData.SearchOrganizations);
             }
         }
 
@@ -86,19 +100,13 @@ namespace ZendeskSearchRepository
 
             try
             {
-
                 if (string.IsNullOrWhiteSpace(searchText) || _organizations == null || _organizations.Count == 0)
-                {
                     return returnList;
-                }
-                else
-                {
-                    return GetMatchingObjectsContaningMatchingString<Ticket>(searchText, _tickets);
-                }
+                return GetMatchingObjectsContaningMatchingString(searchText, _tickets);
             }
             catch (Exception ex)
             {
-                throw new ZendeskSearchManagerException(ErrorMessages.SearchData.SearchTickets);
+                throw new ZendeskSearchRepositoryException(ErrorMessages.SearchData.SearchTickets);
             }
         }
 
@@ -108,65 +116,59 @@ namespace ZendeskSearchRepository
 
             try
             {
-
                 if (string.IsNullOrWhiteSpace(searchText) || _organizations == null || _organizations.Count == 0)
-                {
                     return returnList;
-                }
-                else
-                {
-                    return GetMatchingObjectsContaningMatchingString<User>(searchText, _users);
-                }
+                return GetMatchingObjectsContaningMatchingString(searchText, _users);
             }
             catch (Exception ex)
             {
-                throw new ZendeskSearchManagerException(ErrorMessages.SearchData.SearchUser);
+                throw new ZendeskSearchRepositoryException(ErrorMessages.SearchData.SearchUser);
             }
         }
 
-        protected List<Organization> GetMatchingObjectsContaningMatchingString(string searchText)
-        {
-            var matchingOrganisations = new List<Organization>();
-
-            var allOrganization = _organizations;
-
-            foreach (var org in allOrganization)
-            {
-                if (!String.IsNullOrWhiteSpace(org.JsonData) && org.JsonData.ToLower().Contains(searchText.ToLower()))
-                {
-                    matchingOrganisations.Add(org);
-                }
-            }
-            return matchingOrganisations;
-        }
-
-        protected List<T> GetMatchingObjectsContaningMatchingString<T>(string searchText, List<T> entityList) where T : RepoItem, new()
+        protected List<T> GetMatchingObjectsContaningMatchingString<T>(string searchText, List<T> entityList)
+            where T : RepoItem, new()
         {
             var matchingOrganisations = new List<T>();
 
             foreach (var item in entityList)
             {
-                if (!String.IsNullOrWhiteSpace(item.JsonData) && item.JsonData.ToLower().Contains(searchText.ToLower()))
+                try
                 {
-                    matchingOrganisations.Add(item);
+                    var jsontemp = item.JsonData;
+                    var jsontemp2 = jsontemp.Replace("\"", "");
+                    var jsonData = Regex.Replace(jsontemp2, @"\t|\n|\r", "");
+
+                    if (!string.IsNullOrWhiteSpace(jsonData) &&
+                        jsonData.Contains(searchText, StringComparison.InvariantCultureIgnoreCase))
+
+                        matchingOrganisations.Add(item);
+                }                     
+                catch (Exception ex)
+                {
+                    Console.WriteLine(@"Error adding item to generic list of Type:" + typeof(T) + ". Continuing on with rest...");
                 }
             }
+
             return matchingOrganisations;
         }
 
-        //protected Task<List<Ticket>> SearchTickets(string searchText)
-        //{
-
-        //}
-
-        //protected Task<List<User>> SearchUsers(string searchText)
-        //{
-
-        //}
-
         #endregion
 
-        #region Static Memebers
+        #region LoadData
+
+        protected static void GetConfigSettings()
+        {
+            // Dependency Injection Setup, Config File values loaded from JSON file where they're defined, and used to initialise PrintProcessing Manager
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            var config = builder.Build();
+
+            configSettings = new SearchRepoConfigSettings(config);
+        }
+
         protected static void PopulateDateRepo(ISearchRepoConfigSettings configSettings)
         {
             try
@@ -183,12 +185,13 @@ namespace ZendeskSearchRepository
 
         protected static void LoadOrganizations(string filePath)
         {
-            try { 
-                LoadRepoItems<Organization>(out _organizations, filePath);
+            try
+            {
+                LoadRepoItems(out _organizations, filePath);
             }
             catch (Exception ex)
             {
-                throw new ZendeskSearchRepositoryException(ErrorMessages.LoadData.OrganizationDataMessage , ex);
+                throw new ZendeskSearchRepositoryException(ErrorMessages.LoadData.OrganizationDataMessage, ex);
             }
         }
 
@@ -196,7 +199,7 @@ namespace ZendeskSearchRepository
         {
             try
             {
-                LoadRepoItems<User>(out _users, filePath);
+                LoadRepoItems(out _users, filePath);
             }
             catch (Exception ex)
             {
@@ -208,7 +211,7 @@ namespace ZendeskSearchRepository
         {
             try
             {
-                LoadRepoItems<Ticket>(out _tickets, filePath);
+                LoadRepoItems(out _tickets, filePath);
             }
             catch (Exception ex)
             {
@@ -216,19 +219,20 @@ namespace ZendeskSearchRepository
             }
         }
 
-        protected static void LoadRepoItems<T>(out List<T> listToBePopulated, string jsonFilePath) where T : RepoItem, new()
+        protected static void LoadRepoItems<T>(out List<T> listToBePopulated, string jsonFilePath)
+            where T : RepoItem, new()
         {
             listToBePopulated = new List<T>();
 
-            List <RepoItem> returnList = new List<RepoItem>();
+            var returnList = new List<RepoItem>();
 
-            using (StreamReader file = File.OpenText(jsonFilePath))
-            using (JsonTextReader reader = new JsonTextReader(file))
+            using (var file = File.OpenText(jsonFilePath))
+            using (var reader = new JsonTextReader(file))
             {
                 var aRepoItems = JToken.ReadFrom(reader);
-                JEnumerable<JToken> repoItemList = aRepoItems.Children();
+                var repoItemList = aRepoItems.Children();
 
-                foreach (JToken jsonRepoItem in repoItemList)
+                foreach (var jsonRepoItem in repoItemList)
                 {
                     dynamic repoItem;
                     var id = jsonRepoItem["_id"];
@@ -237,28 +241,28 @@ namespace ZendeskSearchRepository
 
                     if (typeof(T) == typeof(Organization))
                     {
-                        repoItem = new Organization((int?)id, (Guid?) externalId, jsonData);
+                        repoItem = new Organization((int?) id, (Guid?) externalId, jsonData);
                         listToBePopulated.Add(repoItem);
-
-                    } else if (typeof(T) == typeof(User))
+                    }
+                    else if (typeof(T) == typeof(User))
                     {
                         var organizationId = jsonRepoItem["organization_id"];
-                        repoItem = new User((int?)organizationId, (int?)id, (Guid?)externalId, jsonData);
+                        repoItem = new User((int?) organizationId, (int?) id, (Guid?) externalId, jsonData);
                         listToBePopulated.Add(repoItem);
-
-                    } else if (typeof(T) == typeof(Ticket))
+                    }
+                    else if (typeof(T) == typeof(Ticket))
                     {
                         var organizationId = jsonRepoItem["organization_id"];
                         var submitterId = jsonRepoItem["submitter_id"];
                         var assigneeId = jsonRepoItem["assignee_id"];
 
-                        repoItem = new Ticket()
+                        repoItem = new Ticket
                         {
-                            Id = (Guid?)id,
-                            ExternalId = (Guid?)externalId,
-                            OrganizationId = (int?)organizationId,
-                            SubmitterId = (int?)submitterId,
-                            AssigneeId =  (int?)assigneeId,
+                            Id = (Guid?) id,
+                            ExternalId = (Guid?) externalId,
+                            OrganizationId = (int?) organizationId,
+                            SubmitterId = (int?) submitterId,
+                            AssigneeId = (int?) assigneeId,
                             JsonData = jsonData
                         };
 
@@ -268,17 +272,71 @@ namespace ZendeskSearchRepository
             }
         }
 
-        protected static void GetConfigSettings()
+        #endregion
+
+        #region Get Entity Details
+
+        public Organization GetOrganizationById(int? id)
         {
-            // Dependency Injection Setup, Config File values loaded from JSON file where they're defined, and used to initialise PrintProcessing Manager
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+            if (id.HasValue) return _organizations.FirstOrDefault(x => x.Id == id);
 
-            var config = builder.Build();
-
-            configSettings = new SearchRepoConfigSettings(config);
+            return new Organization();
         }
+
+        public ComplexUserDTO GetComplexUserById(int? userId)
+        {
+            var complexUser = new ComplexUserDTO();
+
+            if (userId.HasValue)
+            {
+                complexUser.UserDTO = GetUserById(userId);
+                complexUser.OrganizationDTO = GetOrganizationById(complexUser.UserDTO.OrganizationId);
+                return complexUser;
+            }
+
+            return complexUser;
+        }
+
+        public ComplexTicketDTO GetComplexTicketById(Guid? ticketId)
+        {
+            var complexTicket = new ComplexTicketDTO();
+            complexTicket.Ticket = GetTicketById(ticketId);
+
+            if (complexTicket.Ticket?.Id != null)
+            {
+                if (complexTicket.Ticket.AssigneeId.HasValue)
+                {
+                    var assigneedUserId = complexTicket.Ticket.AssigneeId.Value;
+                    complexTicket.TicketAssigneeDTO = GetComplexUserById(assigneedUserId);
+                }
+
+                if (complexTicket.Ticket.SubmitterId.HasValue)
+                {
+                    var submitterUserId = complexTicket.Ticket.SubmitterId.Value;
+                    complexTicket.TicketSubmitterDTO = GetComplexUserById(submitterUserId);
+                }
+
+                if (complexTicket.Ticket.OrganizationId.HasValue)
+                    complexTicket.TicketOrganizationDTO = GetOrganizationById(complexTicket.Ticket.OrganizationId);
+            }
+
+            return complexTicket;
+        }
+
+        protected User GetUserById(int? id)
+        {
+            if (id.HasValue) return _users.FirstOrDefault(x => x.Id == id);
+
+            return null;
+        }
+
+        protected Ticket GetTicketById(Guid? id)
+        {
+            if (id.HasValue && id.Value != Guid.Empty) return _tickets.FirstOrDefault(x => x.Id == id);
+
+            return null;
+        }
+
         #endregion
     }
 }
