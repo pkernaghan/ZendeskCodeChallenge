@@ -4,6 +4,7 @@
     {
         public static class ResultSummary
         {
+            public static string EmptySearchStringMessage = @"Search String Is empty. Please search again.";
             public static string NoMatchingResults = @"No Matching Results found.";
         }
 

@@ -10,14 +10,6 @@ namespace ZendeskSearchProcessor.Common
         {
             if (searchRequest == null)
                 throw new ArgumentNullException(ErrorMessages.SearchRequestValidation.SearchRequestNull);
-
-            ValidateSearchText(searchRequest.SearchText);
-        }
-
-        public static void ValidateSearchText(string searchText)
-        {
-            if (string.IsNullOrWhiteSpace(searchText))
-                throw new ArgumentException(ErrorMessages.SearchRequestValidation.SearchTextEmpty);
         }
     }
 }

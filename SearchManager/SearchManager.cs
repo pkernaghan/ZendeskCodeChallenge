@@ -23,7 +23,13 @@ namespace SearchManager
             try
             {
                 SearchValidationHelper.ValidateSearchRequest(searchRequest);
-                await ExecuteSearch(searchRequest);
+
+                if (String.IsNullOrWhiteSpace(searchRequest.SearchText))
+                {
+                    Console.WriteLine(PrintSearchResultMessages.ResultSummary.EmptySearchStringMessage);
+                }
+
+                await ExecuteSearch(searchRequest, new SearchProcessor());
             }
             catch (Exception ex)
             {
@@ -31,10 +37,9 @@ namespace SearchManager
             }
         }
 
-        protected async Task ExecuteSearch(ISearchRequest searchRequest)
+        protected virtual async Task ExecuteSearch(ISearchRequest searchRequest, ISearchProcessor searchProcessor)
         {
-                var searchProcessor = new SearchProcessor();
-                var searchResult = await searchProcessor.PerformSearch(searchRequest);
+            var searchResult = await searchProcessor.PerformSearch(searchRequest);
                 DisplaySearchResults(searchResult);
         }
 
